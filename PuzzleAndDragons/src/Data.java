@@ -14,10 +14,14 @@ public class Data {
 	private double exactlyNineCombos = 0.0;
 	private double atLeastTenCombos = 0.0;
 	private int runs;
-	private double pDropdownForTwoVertical = 1/6.0 + 5/6.0 * 2/36.0;
-	private double pDropdownForOneVertical = 1/36.0 + 5/6.0 * 2/36.0;
+
 	
 	public Data(int runs, int numColors, boolean hearts, boolean factorInDropDowns) {
+		int numTypeOfOrbs = numColors + (hearts?1:0);
+		double pDropdownForTwoVertical = 1.0/numTypeOfOrbs + 
+				(numTypeOfOrbs-1)/(numTypeOfOrbs) * 2.0/(numTypeOfOrbs)*(numTypeOfOrbs);
+		double pDropdownForOneVertical = 1.0/(numTypeOfOrbs)*(numTypeOfOrbs) + 
+				(numTypeOfOrbs-1)/(numTypeOfOrbs) * 2.0/(numTypeOfOrbs)*(numTypeOfOrbs);
 		this.runs = runs;
 		for (int i = 0; i < runs; i++) {
 			Board board = new Board(numColors, hearts);

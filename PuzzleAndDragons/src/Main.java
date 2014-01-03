@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Main {
 	public static void main(String[] args) {
-		int numColors = 5;
+		int numColors = 3;
 		boolean hearts = true;
 		int runs = 100000000;
 		boolean factorInDropDowns = true;
