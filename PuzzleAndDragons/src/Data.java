@@ -1,7 +1,4 @@
 import java.util.Random;
-import java.lang.*;
-
-import org.junit.internal.matchers.CombinableMatcher;
 
 public class Data {
 	private double exactlyThreeColors = 0.0;
@@ -73,13 +70,6 @@ public class Data {
 				}
 			}	
 			
-//
-//			if (board.isChinesePossible()) {
-//				exactlyThreeColors++;
-//			}
-//			if (board.isKirinOrUmiYamaPossible()) {
-//				exactlyFourColors++;
-//			}
 			
 			//This calculation for Chinese/Umiyama only works if the orbs that they need to activate 
 			//are all in the dungeon
