@@ -1,14 +1,15 @@
 import java.util.Random;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class Board {
 	private boolean exactlyThreeColorsPossible;
 	private boolean exactlyFourColorsPossible;
 	private int numColorsPossible = 0;
 	private int numCombosPossible = 0;
-	private boolean hearts;
 	private int[] orbs = {0,0,0,0,0};
 	private int numHearts = 0;
+	private int numDoubles = 0;
+	private int numSingles = 0;
 	
 	/**
 	 * Creates a board, number of orbs stored in a int[6]
@@ -19,6 +20,7 @@ public class Board {
 	public Board(int numColors, boolean hearts) {
 		
 		int allColors = numColors + (hearts?1:0);
+
 		if (hearts) {
 			assertEquals(numColors+1, allColors);
 		} else {
@@ -54,7 +56,15 @@ public class Board {
 					exactlyFourColorsPossible = false;
 				}
 			}
+			if (orbs[i]%3 == 2) {
+				numDoubles++;
+			}
+			if (orbs[i]%3 == 1) {
+				numSingles++;
+			}
 		}
+		
+		assertTrue(numDoubles + numSingles <= 6);
 		numCombosPossible += numHearts/3;	
 	}
 	
@@ -109,5 +119,21 @@ public class Board {
 	 */
 	public boolean isKirinOrUmiYamaPossible() {
 		return exactlyFourColorsPossible;
+	}
+	
+	/**
+	 * 
+	 * @return number of colors with two leftover orbs
+	 */
+	public int getNumDoubles() {
+		return numDoubles;
+	}
+	
+	/**
+	 * 
+	 * @return number of colors with one leftover orb
+	 */
+	public int getNumSingles() {
+		return numSingles;
 	}
 }

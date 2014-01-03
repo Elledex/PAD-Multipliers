@@ -4,8 +4,9 @@ public class Main {
 	public static void main(String[] args) {
 		int numColors = 5;
 		boolean hearts = true;
-		int runs = 10000000;
-		Data data = new Data(runs, numColors, hearts);
+		int runs = 100000000;
+		boolean factorInDropDowns = true;
+		Data data = new Data(runs, numColors, hearts, factorInDropDowns);
 		Bastet bastet = new Bastet();
 		Isis isis = new Isis();
 		WWIsis wwisis = new WWIsis();
@@ -22,7 +23,10 @@ public class Main {
 		Netero netero = new Netero();
 		Robin robin = new Robin();
 		
-		System.out.printf("Data for %d runs:%n", runs);
+		System.out.printf("Data for %d runs with %d colors %n", runs, numColors);
+		if (hearts) {
+			System.out.println("(There are hearts)");
+		}
 		bastet.summarize(data);
 		isis.summarize(data);
 		wwisis.summarize(data);

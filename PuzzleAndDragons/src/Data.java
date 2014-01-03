@@ -1,3 +1,7 @@
+import java.util.Random;
+import java.lang.*;
+
+import org.junit.internal.matchers.CombinableMatcher;
 
 public class Data {
 	private double exactlyThreeColors = 0.0;
@@ -11,28 +15,103 @@ public class Data {
 	private double exactlySevenCombos = 0.0;
 	private double exactlyEightCombos = 0.0;
 	private double exactlyNineCombos = 0.0;
-	private double exactlyTenCombos = 0.0;
+	private double atLeastTenCombos = 0.0;
 	private int runs;
+	private double pDropdownForTwoVertical = 1/6.0 + 5/6.0 * 2/36.0;
+	private double pDropdownForOneVertical = 1/36.0 + 5/6.0 * 2/36.0;
 	
-	public Data(int runs, int numColors, boolean hearts) {
+	public Data(int runs, int numColors, boolean hearts, boolean factorInDropDowns) {
 		this.runs = runs;
 		for (int i = 0; i < runs; i++) {
 			Board board = new Board(numColors, hearts);
 			int numColorsPossible = board.getNumColorsPossible();
 			int heartsPossible = board.heartsPossible();
 			int numCombosPossible = board.getNumCombosPossible();
-			if (board.isChinesePossible()) {
-				exactlyThreeColors++;
-			}
-			if (board.isKirinOrUmiYamaPossible()) {
-				exactlyFourColors++;
-			}
+			
+			if (factorInDropDowns) {
+				int numDoubles = board.getNumDoubles();
+				int numSingles = board.getNumSingles();
+				Random random = new Random();
+				for (int j = 0; j < numDoubles; j++) {
+					float r = random.nextFloat();
+					
+					if (r < pDropdownForTwoVertical) {
+						numCombosPossible++;
+						float s = random.nextFloat();
+						if (hearts) {
+							if (s < 1.0/(numColors + 1)) {
+								heartsPossible = 1;
+							} else if (s < 2.0/(numColors+2)) {
+								numColorsPossible = Math.min(numColors, numColorsPossible+1);
+							}
+						} else {
+							if (s < 1.0/numColors) {
+								numColorsPossible = Math.min(numColors, numColorsPossible+1); 
+							}
+						}
+					}
+					
+				}
+				for (int j = 0; j < numSingles; j++) {
+					float r = random.nextFloat();
+					if (r < pDropdownForOneVertical) {
+						numCombosPossible++;
+						float s = random.nextFloat();
+						if (hearts) {
+							if (s < 1.0/(numColors + 1)) {
+								heartsPossible = 1;
+							} else if (s < 2.0/(numColors+2)) {
+								numColorsPossible = Math.min(numColors, numColorsPossible+1);
+							}
+						} else {
+							if (s < 1.0/numColors) {
+								numColorsPossible = Math.min(numColors, numColorsPossible+1); 
+							}
+						}
+
+					}
+				}
+			}	
+			
+//
+//			if (board.isChinesePossible()) {
+//				exactlyThreeColors++;
+//			}
+//			if (board.isKirinOrUmiYamaPossible()) {
+//				exactlyFourColors++;
+//			}
+			
+			//This calculation for Chinese/Umiyama only works if the orbs that they need to activate 
+			//are all in the dungeon
+			Random random = new Random();
 			switch (numColorsPossible) {
 				case 5: fiveColors++;
+						exactlyThreeColors++;
+						exactlyFourColors++;
 						break;
 				case 4: fourColors++;
+						float r = random.nextFloat();
+						if (r < 1.0/numColors) {
+							exactlyFourColors++;
+						}
+						if (r < (numColors - 3.0)/(numColors)) {
+							exactlyThreeColors++;
+						}
 						break;
 				case 3: threeColors++;
+						float s = random.nextFloat();
+						double denominator = 1.0;
+						// Couldn't figure out how to get numColors choose 3 working, so I was lazy
+						if (numColors == 5) {
+							denominator = 10.0;
+						} else if (numColors == 4) {
+							denominator = 4.0;
+						} else if (numColors == 3) {
+							denominator = 1.0;
+						}
+						if (s < 1.0/denominator) {
+							exactlyThreeColors++;
+						}
 						break;
 			}
 			
@@ -54,9 +133,13 @@ public class Data {
 						break;
 				case 9: exactlyNineCombos++;
 						break;
-				case 10: exactlyTenCombos++;
-						break;
 			}
+			
+			if (numCombosPossible >= 10) {
+				atLeastTenCombos++;
+			}
+			
+			
 		}
 	}
 	
@@ -85,7 +168,7 @@ public class Data {
 	}
 	
 	public double activateAnubis() {
-		return exactlyTenCombos/runs;
+		return atLeastTenCombos/runs;
 	}
 	
 	public double activateNetero() {
@@ -95,11 +178,11 @@ public class Data {
 	
 	public double activateOokuninushi() {
 		return (exactlySixCombos + exactlySevenCombos + 
-				exactlyEightCombos + exactlyNineCombos + exactlyTenCombos)/runs;
+				exactlyEightCombos + exactlyNineCombos + atLeastTenCombos)/runs;
 	}
 	
 	public double activateRobin() {
-		return (exactlyEightCombos + exactlyNineCombos + exactlyTenCombos)/runs;
+		return (exactlyEightCombos + exactlyNineCombos + atLeastTenCombos)/runs;
 	}
 	
 	
@@ -113,7 +196,7 @@ public class Data {
 	
 	public double BastetDPS() {
 		return (exactlySixCombos*12.25 + 
-				(exactlySevenCombos + exactlyEightCombos + exactlyNineCombos + exactlyTenCombos)*16)/runs;
+				(exactlySevenCombos + exactlyEightCombos + exactlyNineCombos + atLeastTenCombos)*16)/runs;
 	}
 	
 	public double IsisDPS() {
@@ -163,8 +246,8 @@ public class Data {
 	}
 	
 	public double RobinDPS() {
-		return (exactlyEightCombos*16 + exactlyNineCombos*36 + exactlyTenCombos*100)/runs +
-				(1-(exactlyEightCombos + exactlyNineCombos + exactlyTenCombos)/runs);
+		return (exactlyEightCombos*16 + exactlyNineCombos*36 + atLeastTenCombos*100)/runs +
+				(1-(exactlyEightCombos + exactlyNineCombos + atLeastTenCombos)/runs);
 	}
 	
 	
